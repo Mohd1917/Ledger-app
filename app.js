@@ -87,7 +87,7 @@ const css = `
 `;
 
 function fmt(n) {
-  return "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return "QAR " + Math.abs(n).toLocaleString
 }
 function getCat(type, id) {
   return CATEGORIES[type]?.find(c => c.id === id) || { label: id, icon: "•" };
