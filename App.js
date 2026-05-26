@@ -23,20 +23,7 @@ const CATEGORIES = {
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-const SEED = [
-  { id: 1, type: "income", category: "salary", amount: 4200, note: "Monthly salary", date: "2026-05-01" },
-  { id: 2, type: "expense", category: "housing", amount: 1350, note: "Rent", date: "2026-05-02" },
-  { id: 3, type: "expense", category: "food", amount: 87.5, note: "Groceries", date: "2026-05-04" },
-  { id: 4, type: "expense", category: "transport", amount: 42, note: "Gas", date: "2026-05-06" },
-  { id: 5, type: "income", category: "freelance", amount: 650, note: "Design project", date: "2026-05-09" },
-  { id: 6, type: "expense", category: "entertainment", amount: 29.99, note: "Streaming", date: "2026-05-10" },
-  { id: 7, type: "expense", category: "food", amount: 64.2, note: "Dinner out", date: "2026-05-13" },
-  { id: 8, type: "expense", category: "health", amount: 120, note: "Dentist", date: "2026-05-15" },
-  { id: 9, type: "expense", category: "shopping", amount: 215, note: "Clothes", date: "2026-05-17" },
-  { id: 10, type: "income", category: "investment", amount: 310, note: "Dividends", date: "2026-05-20" },
-  { id: 11, type: "expense", category: "utilities", amount: 98, note: "Electric", date: "2026-05-21" },
-  { id: 12, type: "expense", category: "food", amount: 55, note: "Coffee", date: "2026-05-22" },
-];
+const SEED = [];
 
 const C = {
   bg: "#0d0d12", card: "#16161f", border: "#222230",
@@ -44,43 +31,52 @@ const C = {
 };
 
 const css = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#0d0d12;color:#e8e2d9;font-family:'DM Mono',monospace;min-height:100vh}
+  body{background:#0d0d12;color:#e8e2d9;font-family:'Inter',sans-serif;min-height:100vh}
   .wrap{max-width:500px;margin:0 auto;padding:0 16px 60px}
   .header{display:flex;justify-content:space-between;align-items:flex-end;padding:24px 0 16px}
-  .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff}
+  .logo{font-family:'Inter',sans-serif;font-weight:800;font-size:22px;color:#fff}
   .logo span{color:#c8ff57}
-  .logo-sub{font-size:10px;color:#555;letter-spacing:1.5px;margin-top:2px}
+  .logo-sub{font-size:10px;color:#555;letter-spacing:1.5px;margin-top:2px;font-weight:500}
   .month-nav{display:flex;align-items:center;gap:8px}
   .month-nav button{background:none;border:none;color:#c8ff57;font-size:22px;cursor:pointer;padding:0 2px}
-  .month-label{color:#c8ff57;font-weight:700;font-size:13px;min-width:72px;text-align:center}
+  .month-label{color:#c8ff57;font-weight:600;font-size:13px;min-width:72px;text-align:center}
   .tabs{display:flex;gap:20px;border-bottom:1px solid #1a1a24;margin-bottom:20px}
-  .tab{background:none;border:none;border-bottom:2px solid transparent;color:#555;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;padding:8px 0;cursor:pointer;transition:.2s}
+  .tab{background:none;border:none;border-bottom:2px solid transparent;color:#555;font-family:'Inter',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;padding:8px 0;cursor:pointer;transition:.2s}
   .tab.active{color:#c8ff57;border-bottom-color:#c8ff57}
   .card{background:#16161f;border:1px solid #222230;border-radius:16px;padding:18px;margin-bottom:12px}
-  .label{font-size:10px;letter-spacing:1.4px;color:#555}
-  .balance{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;letter-spacing:-0.5px;margin-top:6px;word-break:break-word;line-height:1.2}
+  .label{font-size:10px;letter-spacing:1.4px;color:#555;font-weight:600}
+  .balance{font-family:'Inter',sans-serif;font-weight:800;font-size:28px;letter-spacing:-0.5px;margin-top:6px;word-break:break-word;line-height:1.2}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .mini-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-top:6px;word-break:break-word;line-height:1.3}
+  .mini-amt{font-family:'Inter',sans-serif;font-weight:700;font-size:16px;margin-top:6px;word-break:break-word;line-height:1.3}
   .sub{font-size:11px;color:#444;margin-top:4px}
   .bar-wrap{background:#1e1e2a;border-radius:4px;height:7px;overflow:hidden;margin-top:6px}
   .bar-fill{height:7px;border-radius:4px}
   .tx{display:flex;align-items:center;gap:12px;padding:14px 16px;margin-bottom:8px}
   .tx-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-  .tx-note{font-size:13px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tx-note{font-size:13px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
   .tx-meta{font-size:11px;color:#444;margin-top:2px}
-  .tx-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;text-align:right}
+  .tx-amt{font-family:'Inter',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;text-align:right}
   .del-btn{background:none;border:none;cursor:pointer;opacity:.4;font-size:15px;padding:4px;transition:.2s}
   .del-btn:hover{opacity:1}
   .type-row{display:flex;gap:8px;margin-bottom:18px}
-  .type-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
+  .type-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid;font-family:'Inter',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
-  .chip{border-radius:6px;padding:6px 12px;font-size:11px;border:1.5px solid;cursor:pointer;font-family:'DM Mono',monospace;transition:.2s}
-  .input{background:#0d0d12;border:1.5px solid #222230;border-radius:10px;color:#e8e2d9;font-family:'DM Mono',monospace;font-size:14px;padding:10px 14px;width:100%;outline:none;margin-bottom:12px;transition:.2s}
+  .chip{border-radius:6px;padding:6px 12px;font-size:11px;border:1.5px solid;cursor:pointer;font-family:'Inter',sans-serif;font-weight:500;transition:.2s}
+  .input{background:#0d0d12;border:1.5px solid #222230;border-radius:10px;color:#e8e2d9;font-family:'Inter',sans-serif;font-size:14px;padding:10px 14px;width:100%;outline:none;margin-bottom:12px;transition:.2s}
   .input:focus{border-color:#c8ff57}
-  .add-btn{background:#c8ff57;color:#0d0d12;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:.2s}
+  .add-btn{background:#c8ff57;color:#0d0d12;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-weight:800;font-size:15px;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:.2s}
   .add-btn:hover{background:#d8ff77}
+  .reset-btn{background:transparent;color:#ff6b6b;border:1.5px solid #ff6b6b33;border-radius:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:13px;padding:10px 16px;cursor:pointer;transition:.2s;width:100%;margin-top:8px}
+  .reset-btn:hover{background:rgba(255,107,107,.1);border-color:#ff6b6b88}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal{background:#16161f;border:1px solid #222230;border-radius:20px;padding:28px;max-width:340px;width:100%}
+  .modal-title{font-family:'Inter',sans-serif;font-weight:800;font-size:18px;margin-bottom:10px}
+  .modal-text{font-size:13px;color:#888;margin-bottom:24px;line-height:1.6}
+  .modal-btns{display:flex;gap:10px}
+  .modal-cancel{flex:1;padding:12px;border-radius:10px;border:1.5px solid #333;background:transparent;color:#aaa;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;cursor:pointer}
+  .modal-confirm{flex:1;padding:12px;border-radius:10px;border:none;background:#ff6b6b;color:#fff;font-family:'Inter',sans-serif;font-weight:700;font-size:14px;cursor:pointer}
   .err{color:#ff6b6b;font-size:12px;margin-bottom:8px}
   .empty{text-align:center;padding:48px 0;color:#555;font-size:13px}
   .empty a{color:#c8ff57;cursor:pointer;text-decoration:none}
@@ -102,6 +98,7 @@ function App() {
   const [year, setYear] = useState(now.getFullYear());
   const [form, setForm] = useState({ type: "expense", category: "", amount: "", note: "", date: now.toISOString().slice(0,10) });
   const [err, setErr] = useState("");
+  const [showReset, setShowReset] = useState(false);
 
   const filtered = useMemo(() =>
     txs.filter(t => { const d = new Date(t.date); return d.getMonth()===month && d.getFullYear()===year; })
@@ -132,11 +129,25 @@ function App() {
     setView("log");
   };
 
+  const resetMonth = () => {
+    setTxs(p => p.filter(t => { const d = new Date(t.date); return !(d.getMonth()===month && d.getFullYear()===year); }));
+    setShowReset(false);
+  };
   const cats = CATEGORIES[form.type];
   const savPct = income>0 ? Math.max(0,Math.min(100,(balance/income)*100)) : 0;
 
   return React.createElement(React.Fragment, null,
     React.createElement("style", null, css),
+    showReset && React.createElement("div", {className:"modal-overlay"},
+      React.createElement("div", {className:"modal"},
+        React.createElement("div", {className:"modal-title"}, "⚠️ تصفير الشهر"),
+        React.createElement("div", {className:"modal-text"}, "هذا سيحذف جميع معاملات "+MONTHS[month]+" "+year+" نهائياً. هل أنت متأكد؟"),
+        React.createElement("div", {className:"modal-btns"},
+          React.createElement("button", {className:"modal-cancel", onClick:()=>setShowReset(false)}, "إلغاء"),
+          React.createElement("button", {className:"modal-confirm", onClick:resetMonth}, "حذف الكل")
+        )
+      )
+    ),
     React.createElement("div", {className:"wrap"},
       React.createElement("div", {className:"header"},
         React.createElement("div", null,
@@ -203,6 +214,9 @@ function App() {
         filtered.length===0 && React.createElement("div", {className:"empty"},
           "No transactions this month. ",
           React.createElement("a", {onClick:()=>setView("add")}, "Add one →")
+        ),
+        filtered.length>0 && React.createElement("button", {className:"reset-btn", onClick:()=>setShowReset(true)},
+          "🗑 Reset "+MONTHS[month]+" "+year
         )
       ),
 
