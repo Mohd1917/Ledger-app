@@ -46,23 +46,23 @@ const C = {
 const css = `
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap');
   *{box-sizing:border-box;margin:0;padding:0}
-  body{background:${C.bg};color:${C.text};font-family:'DM Mono',monospace;min-height:100vh}
+  body{background:#0d0d12;color:#e8e2d9;font-family:'DM Mono',monospace;min-height:100vh}
   .wrap{max-width:500px;margin:0 auto;padding:0 16px 60px}
   .header{display:flex;justify-content:space-between;align-items:flex-end;padding:24px 0 16px}
   .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#fff}
-  .logo span{color:${C.green}}
-  .logo-sub{font-size:10px;color:${C.muted};letter-spacing:1.5px;margin-top:2px}
+  .logo span{color:#c8ff57}
+  .logo-sub{font-size:10px;color:#555;letter-spacing:1.5px;margin-top:2px}
   .month-nav{display:flex;align-items:center;gap:8px}
-  .month-nav button{background:none;border:none;color:${C.green};font-size:22px;cursor:pointer;padding:0 2px}
-  .month-label{color:${C.green};font-weight:700;font-size:13px;min-width:72px;text-align:center}
+  .month-nav button{background:none;border:none;color:#c8ff57;font-size:22px;cursor:pointer;padding:0 2px}
+  .month-label{color:#c8ff57;font-weight:700;font-size:13px;min-width:72px;text-align:center}
   .tabs{display:flex;gap:20px;border-bottom:1px solid #1a1a24;margin-bottom:20px}
-  .tab{background:none;border:none;border-bottom:2px solid transparent;color:${C.muted};font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;padding:8px 0;cursor:pointer;transition:.2s}
-  .tab.active{color:${C.green};border-bottom-color:${C.green}}
-  .card{background:${C.card};border:1px solid ${C.border};border-radius:16px;padding:18px;margin-bottom:12px}
-  .label{font-size:10px;letter-spacing:1.4px;color:${C.muted}}
-  .balance{font-family:'Syne',sans-serif;font-weight:800;font-size:42px;letter-spacing:-1px;margin-top:6px}
+  .tab{background:none;border:none;border-bottom:2px solid transparent;color:#555;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;padding:8px 0;cursor:pointer;transition:.2s}
+  .tab.active{color:#c8ff57;border-bottom-color:#c8ff57}
+  .card{background:#16161f;border:1px solid #222230;border-radius:16px;padding:18px;margin-bottom:12px}
+  .label{font-size:10px;letter-spacing:1.4px;color:#555}
+  .balance{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;letter-spacing:-0.5px;margin-top:6px;word-break:break-word;line-height:1.2}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-  .mini-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-top:6px}
+  .mini-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-top:6px;word-break:break-word;line-height:1.3}
   .sub{font-size:11px;color:#444;margin-top:4px}
   .bar-wrap{background:#1e1e2a;border-radius:4px;height:7px;overflow:hidden;margin-top:6px}
   .bar-fill{height:7px;border-radius:4px}
@@ -70,25 +70,26 @@ const css = `
   .tx-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
   .tx-note{font-size:13px;color:#ccc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .tx-meta{font-size:11px;color:#444;margin-top:2px}
-  .tx-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;flex-shrink:0}
+  .tx-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;flex-shrink:0;text-align:right}
   .del-btn{background:none;border:none;cursor:pointer;opacity:.4;font-size:15px;padding:4px;transition:.2s}
   .del-btn:hover{opacity:1}
   .type-row{display:flex;gap:8px;margin-bottom:18px}
   .type-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid;font-family:'Syne',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
   .chip{border-radius:6px;padding:6px 12px;font-size:11px;border:1.5px solid;cursor:pointer;font-family:'DM Mono',monospace;transition:.2s}
-  .input{background:${C.bg};border:1.5px solid ${C.border};border-radius:10px;color:${C.text};font-family:'DM Mono',monospace;font-size:14px;padding:10px 14px;width:100%;outline:none;margin-bottom:12px;transition:.2s}
-  .input:focus{border-color:${C.green}}
-  .add-btn{background:${C.green};color:#0d0d12;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:.2s}
+  .input{background:#0d0d12;border:1.5px solid #222230;border-radius:10px;color:#e8e2d9;font-family:'DM Mono',monospace;font-size:14px;padding:10px 14px;width:100%;outline:none;margin-bottom:12px;transition:.2s}
+  .input:focus{border-color:#c8ff57}
+  .add-btn{background:#c8ff57;color:#0d0d12;border:none;border-radius:10px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;padding:14px;width:100%;cursor:pointer;margin-top:8px;transition:.2s}
   .add-btn:hover{background:#d8ff77}
-  .err{color:${C.red};font-size:12px;margin-bottom:8px}
-  .empty{text-align:center;padding:48px 0;color:${C.muted};font-size:13px}
-  .empty a{color:${C.green};cursor:pointer;text-decoration:none}
+  .err{color:#ff6b6b;font-size:12px;margin-bottom:8px}
+  .empty{text-align:center;padding:48px 0;color:#555;font-size:13px}
+  .empty a{color:#c8ff57;cursor:pointer;text-decoration:none}
 `;
 
 function fmt(n) {
-  return "QAR " + Math.abs(n).toLocaleString
+  return "QAR " + Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
+
 function getCat(type, id) {
   return CATEGORIES[type]?.find(c => c.id === id) || { label: id, icon: "•" };
 }
@@ -157,30 +158,30 @@ function App() {
       view==="dashboard" && React.createElement(React.Fragment, null,
         React.createElement("div", {className:"card"},
           React.createElement("div", {className:"label"}, "NET BALANCE"),
-          React.createElement("div", {className:"balance", style:{color:balance>=0?C.green:C.red}},
+          React.createElement("div", {className:"balance", style:{color:balance>=0?"#c8ff57":"#ff6b6b"}},
             (balance<0?"−":"")+fmt(balance)
           ),
           React.createElement("div", {className:"sub"}, MONTHS[month]+" "+year)
         ),
         React.createElement("div", {className:"grid2"},
-          React.createElement("div", {className:"card", style:{margin:0,borderColor:C.green+"33"}},
-            React.createElement("div", {className:"label", style:{color:C.green+"99"}}, "INCOME"),
-            React.createElement("div", {className:"mini-amt", style:{color:C.green}}, fmt(income)),
+          React.createElement("div", {className:"card", style:{margin:0,borderColor:"#c8ff57"+"33"}},
+            React.createElement("div", {className:"label", style:{color:"#c8ff57"+"99"}}, "INCOME"),
+            React.createElement("div", {className:"mini-amt", style:{color:"#c8ff57"}}, fmt(income)),
             React.createElement("div", {className:"sub"}, filtered.filter(t=>t.type==="income").length+" entries")
           ),
-          React.createElement("div", {className:"card", style:{margin:0,borderColor:C.red+"33"}},
-            React.createElement("div", {className:"label", style:{color:C.red+"99"}}, "EXPENSES"),
-            React.createElement("div", {className:"mini-amt", style:{color:C.red}}, fmt(expense)),
+          React.createElement("div", {className:"card", style:{margin:0,borderColor:"#ff6b6b"+"33"}},
+            React.createElement("div", {className:"label", style:{color:"#ff6b6b"+"99"}}, "EXPENSES"),
+            React.createElement("div", {className:"mini-amt", style:{color:"#ff6b6b"}}, fmt(expense)),
             React.createElement("div", {className:"sub"}, filtered.filter(t=>t.type==="expense").length+" entries")
           )
         ),
         income>0 && React.createElement("div", {className:"card"},
           React.createElement("div", {style:{display:"flex",justifyContent:"space-between",alignItems:"center"}},
             React.createElement("div", {className:"label"}, "SAVINGS RATE"),
-            React.createElement("div", {className:"mini-amt", style:{color:C.green,fontSize:18}}, Math.round(savPct)+"%")
+            React.createElement("div", {className:"mini-amt", style:{color:"#c8ff57",fontSize:18}}, Math.round(savPct)+"%")
           ),
           React.createElement("div", {className:"bar-wrap"},
-            React.createElement("div", {className:"bar-fill", style:{width:savPct+"%",background:C.green}})
+            React.createElement("div", {className:"bar-fill", style:{width:savPct+"%",background:"#c8ff57"}})
           )
         ),
         breakdown.length>0 && React.createElement("div", {className:"card"},
@@ -191,10 +192,10 @@ function App() {
             return React.createElement("div", {key:id, style:{marginBottom:12}},
               React.createElement("div", {style:{display:"flex",justifyContent:"space-between",marginBottom:4}},
                 React.createElement("span", {style:{fontSize:13}}, m.icon+" "+m.label),
-                React.createElement("span", {style:{fontSize:13,color:C.red}}, fmt(amt))
+                React.createElement("span", {style:{fontSize:12,color:"#ff6b6b"}}, fmt(amt))
               ),
               React.createElement("div", {className:"bar-wrap"},
-                React.createElement("div", {className:"bar-fill", style:{width:pct+"%",background:C.red}})
+                React.createElement("div", {className:"bar-fill", style:{width:pct+"%",background:"#ff6b6b"}})
               )
             );
           })
@@ -218,8 +219,8 @@ function App() {
               React.createElement("div", {className:"tx-note"}, t.note||m.label),
               React.createElement("div", {className:"tx-meta"}, m.label+" · "+new Date(t.date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric"}))
             ),
-            React.createElement("div", {className:"tx-amt", style:{color:t.type==="income"?C.green:C.red}},
-              (t.type==="income"?"+":"−")+fmt(t.amount)
+            React.createElement("div", {className:"tx-amt", style:{color:t.type==="income"?"#c8ff57":"#ff6b6b"}},
+              (t.type==="income"?"+":"-")+fmt(t.amount)
             ),
             React.createElement("button", {className:"del-btn", onClick:()=>setTxs(p=>p.filter(x=>x.id!==t.id))}, "✕")
           );
@@ -233,9 +234,9 @@ function App() {
             React.createElement("button", {
               key:t, className:"type-btn",
               style:{
-                borderColor:form.type===t?(t==="income"?C.green:C.red):C.border,
+                borderColor:form.type===t?(t==="income"?"#c8ff57":"#ff6b6b"):"#222230",
                 background:form.type===t?(t==="income"?"rgba(200,255,87,.1)":"rgba(255,107,107,.1)"):"transparent",
-                color:form.type===t?(t==="income"?C.green:C.red):C.muted
+                color:form.type===t?(t==="income"?"#c8ff57":"#ff6b6b"):"#555"
               },
               onClick:()=>setForm(f=>({...f,type:t,category:""}))
             }, t==="income"?"↑ Income":"↓ Expense")
@@ -248,14 +249,14 @@ function App() {
               key:c.id, className:"chip",
               style:{
                 background:form.category===c.id?(form.type==="income"?"rgba(200,255,87,.15)":"rgba(255,107,107,.12)"):"#1e1e2a",
-                borderColor:form.category===c.id?(form.type==="income"?C.green:C.red):"#2a2a38",
-                color:form.category===c.id?(form.type==="income"?C.green:C.red):"#777"
+                borderColor:form.category===c.id?(form.type==="income"?"#c8ff57":"#ff6b6b"):"#2a2a38",
+                color:form.category===c.id?(form.type==="income"?"#c8ff57":"#ff6b6b"):"#777"
               },
               onClick:()=>setForm(f=>({...f,category:c.id}))
             }, c.icon+" "+c.label)
           )
         ),
-        React.createElement("div", {className:"label", style:{marginBottom:8}}, "AMOUNT"),
+        React.createElement("div", {className:"label", style:{marginBottom:8}}, "AMOUNT (QAR)"),
         React.createElement("input", {className:"input",type:"number",placeholder:"0.00",value:form.amount,onChange:e=>setForm(f=>({...f,amount:e.target.value}))}),
         React.createElement("div", {className:"label", style:{marginBottom:8}}, "NOTE (optional)"),
         React.createElement("input", {className:"input",type:"text",placeholder:"What was this for?",value:form.note,onChange:e=>setForm(f=>({...f,note:e.target.value}))}),
@@ -269,3 +270,4 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+
