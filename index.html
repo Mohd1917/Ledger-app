@@ -1,15 +1,1595 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ledger. — Personal Finance</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="text/babel" src="app.js?v=2"></script>
-  </body>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger — تتبع مصاريفك</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0F;
+    --surface: #111118;
+    --surface2: #18181F;
+    --surface3: #1E1E28;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #7B6EF6;
+    --accent2: #A89AF8;
+    --accent-glow: rgba(123,110,246,0.25);
+    --green: #22D3A0;
+    --green-dim: rgba(34,211,160,0.15);
+    --red: #F96C6C;
+    --red-dim: rgba(249,108,108,0.12);
+    --yellow: #FFD166;
+    --yellow-dim: rgba(255,209,102,0.12);
+    --text: #F0EFF8;
+    --text2: #9896B0;
+    --text3: #5C5A72;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── BACKGROUND EFFECTS ─── */
+  .bg-orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-orb-1 {
+    width: 400px; height: 400px;
+    background: rgba(123,110,246,0.08);
+    top: -100px; right: -100px;
+  }
+  .bg-orb-2 {
+    width: 300px; height: 300px;
+    background: rgba(34,211,160,0.05);
+    bottom: 100px; left: -80px;
+  }
+
+  /* ─── LAYOUT ─── */
+  .app-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 100px;
+  }
+
+  /* ─── TOP BAR ─── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(to bottom, var(--bg) 80%, transparent);
+    padding-bottom: 16px;
+  }
+  .topbar-brand {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, var(--accent2), var(--green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .topbar-right { display: flex; gap: 10px; align-items: center; }
+  .icon-btn {
+    width: 40px; height: 40px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text2);
+  }
+  .icon-btn:hover { background: var(--surface3); color: var(--text); }
+  .notif-dot {
+    width: 7px; height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: absolute;
+    top: 8px; left: 8px;
+    box-shadow: 0 0 6px var(--accent);
+  }
+
+  /* ─── GREETING ─── */
+  .greeting {
+    padding: 8px 20px 20px;
+  }
+  .greeting-sub {
+    font-size: 13px;
+    color: var(--text3);
+    font-weight: 400;
+    margin-bottom: 3px;
+  }
+  .greeting-name {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  /* ─── MAIN BALANCE CARD ─── */
+  .balance-card {
+    margin: 0 20px 24px;
+    background: linear-gradient(135deg, #1C1A2E 0%, #1A1E2E 100%);
+    border: 1px solid rgba(123,110,246,0.2);
+    border-radius: 24px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  .balance-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(123,110,246,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .balance-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 20px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(34,211,160,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .balance-label {
+    font-size: 12px;
+    color: var(--text3);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .balance-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 44px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -2px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .balance-currency {
+    font-size: 18px;
+    color: var(--accent2);
+    font-weight: 400;
+    margin-right: 6px;
+  }
+  .balance-change {
+    font-size: 13px;
+    color: var(--text3);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .change-pill {
+    background: var(--green-dim);
+    color: var(--green);
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .change-pill.red { background: var(--red-dim); color: var(--red); }
+  .balance-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .stat-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+  }
+  .stat-label {
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .stat-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .stat-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+
+  /* ─── QUICK ADD ─── */
+  .quick-add {
+    margin: 0 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+  .input-group {
+    display: flex;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .input-group:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .input-amount {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    color: var(--text);
+    padding: 14px 16px;
+    direction: ltr;
+    text-align: left;
+    min-width: 0;
+  }
+  .input-amount::placeholder { color: var(--text3); font-size: 16px; }
+  .input-currency {
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--border);
+    color: var(--accent2);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 14px;
+    font-family: 'Space Mono', monospace;
+    cursor: pointer;
+    outline: none;
+    direction: ltr;
+    appearance: none;
+  }
+  .input-desc {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 14px;
+    padding: 12px 16px;
+    outline: none;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  .input-desc:focus { border-color: var(--accent); }
+  .input-desc::placeholder { color: var(--text3); }
+  .add-btn {
+    background: linear-gradient(135deg, var(--accent), #9B8FF7);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    font-size: 24px;
+    width: 58px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(123,110,246,0.4);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .add-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(123,110,246,0.5);
+  }
+  .add-btn:active { transform: translateY(0); }
+
+  /* category buttons */
+  .categories {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cat-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .cat-btn:hover { border-color: var(--accent); color: var(--accent2); }
+  .cat-btn.active {
+    background: var(--accent-glow);
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .section-link {
+    font-size: 12px;
+    color: var(--accent2);
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  /* ─── CHART SECTION ─── */
+  .chart-card {
+    margin: 0 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+  }
+  .chart-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .chart-tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    background: transparent;
+    transition: all 0.2s;
+  }
+  .chart-tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-weight: 600;
+  }
+  .chart-wrap {
+    position: relative;
+    height: 120px;
+  }
+  canvas#spendChart { width: 100% !important; }
+  .chart-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 2px;
+  }
+
+  /* ─── CATEGORY BREAKDOWN ─── */
+  .breakdown-card {
+    margin: 0 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px;
+  }
+  .breakdown-item {
+    margin-bottom: 14px;
+  }
+  .breakdown-item:last-child { margin-bottom: 0; }
+  .breakdown-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 7px;
+  }
+  .breakdown-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .breakdown-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .breakdown-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .progress-bar {
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ─── TRANSACTIONS ─── */
+  .txn-list {
+    margin: 0 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .txn-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .txn-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.02), transparent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .txn-item:hover { border-color: var(--border2); transform: translateX(-2px); }
+  .txn-item:hover::before { opacity: 1; }
+  .txn-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .txn-info { flex: 1; min-width: 0; }
+  .txn-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 3px;
+  }
+  .txn-meta {
+    font-size: 11px;
+    color: var(--text3);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .txn-meta-dot { color: var(--border2); }
+  .txn-amount {
+    font-family: 'Space Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    text-align: left;
+    direction: ltr;
+    flex-shrink: 0;
+  }
+  .txn-amount.expense { color: var(--red); }
+  .txn-amount.income { color: var(--green); }
+
+  /* ─── PRO BANNER ─── */
+  .pro-banner {
+    margin: 0 20px 24px;
+    background: linear-gradient(135deg, #1C1429 0%, #1A1E2E 100%);
+    border: 1px solid rgba(168,154,248,0.25);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pro-banner::before {
+    content: '';
+    position: absolute;
+    top: -30px; left: -30px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(168,154,248,0.1) 0%, transparent 70%);
+  }
+  .pro-banner:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(123,110,246,0.2); }
+  .pro-icon {
+    width: 50px; height: 50px;
+    background: linear-gradient(135deg, var(--accent), #C4B5FD);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(123,110,246,0.4);
+  }
+  .pro-text { flex: 1; }
+  .pro-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .pro-sub { font-size: 12px; color: var(--text3); }
+  .pro-cta {
+    background: linear-gradient(135deg, var(--accent), #9B8FF7);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  /* ─── BUDGET ALERT ─── */
+  .budget-alert {
+    margin: 0 20px 24px;
+    background: var(--yellow-dim);
+    border: 1px solid rgba(255,209,102,0.2);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .alert-icon { font-size: 20px; }
+  .alert-text { flex: 1; font-size: 13px; color: var(--yellow); font-weight: 500; }
+  .alert-sub { font-size: 11px; color: rgba(255,209,102,0.6); margin-top: 2px; }
+
+  /* ─── BOTTOM NAV ─── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 430px;
+    background: rgba(17,17,24,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 12px 0 20px;
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.15s;
+  }
+  .nav-icon {
+    font-size: 22px;
+    transition: all 0.2s;
+    filter: grayscale(1) opacity(0.4);
+  }
+  .nav-item.active .nav-icon { filter: none; }
+  .nav-label {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-weight: 500;
+  }
+  .nav-item.active .nav-label { color: var(--accent2); }
+
+  /* ─── ADD TRANSACTION FORM ─── */
+  .add-form {
+    margin: 0 20px 24px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--surface2);
+    border: 1px solid var(--green);
+    border-radius: var(--radius-sm);
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--green);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 20px rgba(34,211,160,0.15);
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 1000;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ─── PAGE SECTIONS (hidden by default) ─── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ─── STATS PAGE ─── */
+  .stats-grid {
+    margin: 0 20px 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .stats-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .stats-tile-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; }
+  .stats-tile-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--text);
+  }
+  .stats-tile-val.green { color: var(--green); }
+  .stats-tile-val.red { color: var(--red); }
+  .stats-tile-change {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  /* ─── PROFILE PAGE ─── */
+  .profile-card {
+    margin: 0 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+  .avatar {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    margin-bottom: 4px;
+    box-shadow: 0 4px 20px var(--accent-glow);
+  }
+  .profile-name { font-size: 20px; font-weight: 700; color: var(--text); }
+  .profile-email { font-size: 13px; color: var(--text3); }
+  .profile-badge {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .settings-list {
+    margin: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .settings-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .settings-item:hover { border-color: var(--border2); }
+  .settings-item-icon { font-size: 20px; width: 36px; text-align: center; }
+  .settings-item-text { flex: 1; }
+  .settings-item-title { font-size: 14px; color: var(--text); font-weight: 500; }
+  .settings-item-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .settings-arrow { color: var(--text3); font-size: 12px; }
+
+  /* ─── MODAL ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    z-index: 500;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-overlay.open {
+    display: flex;
+    animation: fadeIn 0.2s ease;
+  }
+  .modal-sheet {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px 24px 0 0;
+    width: 100%;
+    max-width: 430px;
+    padding: 24px;
+    animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .modal-handle {
+    width: 36px; height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+  .modal-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .modal-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: var(--radius);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    margin-bottom: 10px;
+  }
+  .modal-btn.primary {
+    background: linear-gradient(135deg, var(--accent), #9B8FF7);
+    color: white;
+    box-shadow: 0 4px 20px rgba(123,110,246,0.4);
+  }
+  .modal-btn.secondary {
+    background: var(--surface2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .modal-btn:hover { transform: translateY(-1px); }
+
+  /* ─── PRO MODAL ─── */
+  .pro-features {
+    list-style: none;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .pro-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--text2);
+  }
+  .pro-feature-check {
+    width: 24px; height: 24px;
+    background: var(--green-dim);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--green);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .pro-price {
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(123,110,246,0.2);
+    border-radius: var(--radius);
+  }
+  .pro-price-main {
+    font-family: 'Space Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent2);
+  }
+  .pro-price-period { font-size: 13px; color: var(--text3); }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes slideUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  /* ─── FLOATING ADD BUTTON ─── */
+  .fab {
+    position: fixed;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%) translateX(-130px);
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--accent), #9B8FF7);
+    border: none;
+    border-radius: 18px;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(123,110,246,0.5);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    z-index: 200;
+  }
+  .fab:hover { transform: translateX(-50%) translateX(-130px) translateY(-3px) scale(1.05); }
+  .fab:active { transform: translateX(-50%) translateX(-130px) scale(0.95); }
+
+  /* scroll bar */
+  ::-webkit-scrollbar { width: 0; }
+
+  @media (max-width: 430px) {
+    .fab { transform: translateX(-50%) translateX(-120px); }
+    .fab:hover { transform: translateX(-50%) translateX(-120px) translateY(-3px); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ تم الحفظ</div>
+
+<!-- APP -->
+<div class="app-wrapper">
+
+  <!-- ════════════ HOME PAGE ════════════ -->
+  <div class="page active" id="page-home">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+      <div class="topbar-brand">LEDGER</div>
+      <div class="topbar-right">
+        <div class="icon-btn" style="position:relative;" onclick="openProModal()">
+          <span style="font-size:16px;">⚡</span>
+          <div class="notif-dot"></div>
+        </div>
+        <div class="icon-btn" onclick="showPage('profile')">
+          <span style="font-size:16px;">👤</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Greeting -->
+    <div class="greeting">
+      <div class="greeting-sub">مرحباً،</div>
+      <div class="greeting-name">محمد 👋</div>
+    </div>
+
+    <!-- Balance Card -->
+    <div class="balance-card">
+      <div class="balance-label">إجمالي المصاريف · مايو ٢٠٢٦</div>
+      <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:4px;">
+        <div class="balance-amount" id="total-display">4,720</div>
+        <div class="balance-currency">ر.ق</div>
+      </div>
+      <div class="balance-change">
+        <span class="change-pill red">↑ 12%</span>
+        <span>مقارنةً بأبريل</span>
+      </div>
+      <div class="balance-stats">
+        <div class="stat-item">
+          <div class="stat-label">
+            <div class="stat-dot" style="background:var(--green)"></div>
+            دخل الشهر
+          </div>
+          <div class="stat-value green">18,000</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">
+            <div class="stat-dot" style="background:var(--accent2)"></div>
+            المتبقي
+          </div>
+          <div class="stat-value" style="color:var(--accent2)" id="remaining-display">13,280</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Alert -->
+    <div class="budget-alert">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-text">
+        اقتربت من حد الميزانية
+        <div class="alert-sub">مصاريف الترفيه وصلت 85% من الميزانية</div>
+      </div>
+    </div>
+
+    <!-- Quick Add -->
+    <div class="add-form">
+      <div style="padding:0 20px; margin-bottom:10px;">
+        <input type="text" class="input-desc" id="txn-desc" placeholder="وصف المصروف... (مثال: غداء، بنزين)">
+      </div>
+      <div class="quick-add">
+        <div class="input-group">
+          <select class="input-currency" id="txn-currency">
+            <option>QAR</option>
+            <option>SAR</option>
+            <option>AED</option>
+            <option>USD</option>
+          </select>
+          <input type="number" class="input-amount" id="txn-amount" placeholder="0.00">
+        </div>
+        <button class="add-btn" onclick="addTransaction()">+</button>
+      </div>
+      <div style="padding:0 20px; margin-top:10px;">
+        <div class="categories" id="categories">
+          <div class="cat-btn active" data-cat="🍔 طعام" onclick="selectCat(this)">🍔 طعام</div>
+          <div class="cat-btn" data-cat="🚗 مواصلات" onclick="selectCat(this)">🚗 مواصلات</div>
+          <div class="cat-btn" data-cat="🛒 تسوق" onclick="selectCat(this)">🛒 تسوق</div>
+          <div class="cat-btn" data-cat="🏥 صحة" onclick="selectCat(this)">🏥 صحة</div>
+          <div class="cat-btn" data-cat="🎮 ترفيه" onclick="selectCat(this)">🎮 ترفيه</div>
+          <div class="cat-btn" data-cat="📦 أخرى" onclick="selectCat(this)">📦 أخرى</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="section-header">
+      <div class="section-title">المصاريف — ٧ أيام</div>
+      <div class="section-link">الشهر كاملاً ←</div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-tabs">
+        <button class="chart-tab active">أسبوع</button>
+        <button class="chart-tab" onclick="openProModal()">شهر ⚡</button>
+        <button class="chart-tab" onclick="openProModal()">سنة ⚡</button>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="spendChart" height="120"></canvas>
+      </div>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>هذا الأسبوع</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--surface3)"></div>الأسبوع الماضي</div>
+      </div>
+    </div>
+
+    <!-- Breakdown -->
+    <div class="section-header">
+      <div class="section-title">توزيع المصاريف</div>
+    </div>
+    <div class="breakdown-card">
+      <div class="breakdown-item">
+        <div class="breakdown-top">
+          <div class="breakdown-name">
+            <div class="breakdown-icon" style="background:rgba(249,108,108,0.15)">🍔</div>
+            طعام ومشروبات
+          </div>
+          <div class="breakdown-amount">1,850 ر.ق</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:68%; background:var(--red)"></div>
+        </div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-top">
+          <div class="breakdown-name">
+            <div class="breakdown-icon" style="background:rgba(123,110,246,0.15)">🚗</div>
+            مواصلات
+          </div>
+          <div class="breakdown-amount">920 ر.ق</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:34%; background:var(--accent)"></div>
+        </div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-top">
+          <div class="breakdown-name">
+            <div class="breakdown-icon" style="background:rgba(34,211,160,0.15)">🛒</div>
+            تسوق
+          </div>
+          <div class="breakdown-amount">1,200 ر.ق</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:44%; background:var(--green)"></div>
+        </div>
+      </div>
+      <div class="breakdown-item">
+        <div class="breakdown-top">
+          <div class="breakdown-name">
+            <div class="breakdown-icon" style="background:rgba(255,209,102,0.15)">🎮</div>
+            ترفيه
+          </div>
+          <div class="breakdown-amount">750 ر.ق</div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:28%; background:var(--yellow)"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="section-header">
+      <div class="section-title">آخر المعاملات</div>
+      <div class="section-link">الكل ←</div>
+    </div>
+    <div class="txn-list" id="txn-list">
+      <!-- Injected by JS -->
+    </div>
+
+    <!-- Pro Banner -->
+    <div class="pro-banner" onclick="openProModal()">
+      <div class="pro-icon">⚡</div>
+      <div class="pro-text">
+        <div class="pro-title">فعّل Ledger Pro</div>
+        <div class="pro-sub">قراءة SMS تلقائية + تقارير PDF</div>
+      </div>
+      <button class="pro-cta">جرّبه</button>
+    </div>
+
+  </div><!-- /home page -->
+
+
+  <!-- ════════════ STATS PAGE ════════════ -->
+  <div class="page" id="page-stats">
+    <div class="topbar">
+      <div class="topbar-brand">LEDGER</div>
+      <div class="topbar-right">
+        <div class="icon-btn" onclick="openProModal()"><span>📄</span></div>
+      </div>
+    </div>
+    <div class="greeting">
+      <div class="greeting-sub">إحصائياتك</div>
+      <div class="greeting-name">مايو ٢٠٢٦ 📊</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stats-tile">
+        <div class="stats-tile-label">إجمالي المصاريف</div>
+        <div class="stats-tile-val red">4,720</div>
+        <div class="stats-tile-change" style="color:var(--red)">↑ 12% عن أبريل</div>
+      </div>
+      <div class="stats-tile">
+        <div class="stats-tile-label">أعلى يوم إنفاق</div>
+        <div class="stats-tile-val">الثلاثاء</div>
+        <div class="stats-tile-change" style="color:var(--text3)">820 ر.ق</div>
+      </div>
+      <div class="stats-tile">
+        <div class="stats-tile-label">متوسط يومي</div>
+        <div class="stats-tile-val">157</div>
+        <div class="stats-tile-change" style="color:var(--text3)">ر.ق / يوم</div>
+      </div>
+      <div class="stats-tile">
+        <div class="stats-tile-label">المعاملات</div>
+        <div class="stats-tile-val green" id="txn-count">8</div>
+        <div class="stats-tile-change" style="color:var(--text3)">هذا الشهر</div>
+      </div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">مقارنة الأشهر</div>
+      <div class="section-link" onclick="openProModal()">تقرير سنوي ⚡</div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-wrap">
+        <canvas id="monthChart" height="120"></canvas>
+      </div>
+    </div>
+    <div class="section-header">
+      <div class="section-title">أكثر الفئات إنفاقاً</div>
+    </div>
+    <div class="breakdown-card">
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text2)">🍔 طعام</span>
+          <span style="font-family:'Space Mono'; color:var(--text); font-weight:700;">39%</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text2)">🛒 تسوق</span>
+          <span style="font-family:'Space Mono'; color:var(--text); font-weight:700;">25%</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text2)">🚗 مواصلات</span>
+          <span style="font-family:'Space Mono'; color:var(--text); font-weight:700;">20%</span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:13px;">
+          <span style="color:var(--text2)">🎮 ترفيه</span>
+          <span style="font-family:'Space Mono'; color:var(--text); font-weight:700;">16%</span>
+        </div>
+      </div>
+    </div>
+    <div class="pro-banner" onclick="openProModal()" style="margin-top:8px;">
+      <div class="pro-icon">📄</div>
+      <div class="pro-text">
+        <div class="pro-title">تصدير تقرير PDF</div>
+        <div class="pro-sub">احترافي وجاهز للمشاركة</div>
+      </div>
+      <button class="pro-cta">Pro ⚡</button>
+    </div>
+  </div><!-- /stats -->
+
+
+  <!-- ════════════ PROFILE PAGE ════════════ -->
+  <div class="page" id="page-profile">
+    <div class="topbar">
+      <div class="topbar-brand">LEDGER</div>
+    </div>
+    <div class="profile-card">
+      <div class="avatar">👤</div>
+      <div class="profile-name">محمد</div>
+      <div class="profile-email">mohd@example.com</div>
+      <div class="profile-badge">🆓 مجاني</div>
+    </div>
+    <div class="settings-list">
+      <div class="settings-item">
+        <div class="settings-item-icon">💰</div>
+        <div class="settings-item-text">
+          <div class="settings-item-title">العملة الافتراضية</div>
+          <div class="settings-item-sub">ريال قطري (QAR)</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon">🌐</div>
+        <div class="settings-item-text">
+          <div class="settings-item-title">اللغة</div>
+          <div class="settings-item-sub">العربية</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon">📊</div>
+        <div class="settings-item-text">
+          <div class="settings-item-title">حد الميزانية الشهرية</div>
+          <div class="settings-item-sub">5,000 ر.ق</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item" onclick="openProModal()">
+        <div class="settings-item-icon">📱</div>
+        <div class="settings-item-text">
+          <div class="settings-item-title">قراءة SMS تلقائية ⚡</div>
+          <div class="settings-item-sub">Pro فقط</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item">
+        <div class="settings-item-icon">🔒</div>
+        <div class="settings-item-text">
+          <div class="settings-item-title">الخصوصية والأمان</div>
+          <div class="settings-item-sub">بياناتك محفوظة محلياً</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-item" onclick="confirmReset()">
+        <div class="settings-item-icon">🔄</div>
+        <div class="settings-item-text">
+          <div class="settings-item-title">تصفير الشهر</div>
+          <div class="settings-item-sub">حذف كل معاملات هذا الشهر</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+    </div>
+  </div><!-- /profile -->
+
+</div><!-- /app-wrapper -->
+
+
+<!-- FAB -->
+<button class="fab" onclick="document.getElementById('txn-amount').focus(); showPage('home')">+</button>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">الرئيسية</div>
+  </div>
+  <div class="nav-item" id="nav-stats" onclick="showPage('stats')">
+    <div class="nav-icon">📊</div>
+    <div class="nav-label">الإحصائيات</div>
+  </div>
+  <div class="nav-item" id="nav-pro" onclick="openProModal()">
+    <div class="nav-icon">⚡</div>
+    <div class="nav-label">Pro</div>
+  </div>
+  <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">الحساب</div>
+  </div>
+</nav>
+
+
+<!-- PRO MODAL -->
+<div class="modal-overlay" id="pro-modal" onclick="closeProModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✨ Ledger Pro</div>
+    <ul class="pro-features">
+      <li class="pro-feature-item">
+        <div class="pro-feature-check">✓</div>
+        قراءة SMS البنك تلقائياً وتصنيف المصاريف
+      </li>
+      <li class="pro-feature-item">
+        <div class="pro-feature-check">✓</div>
+        تقارير شهرية وسنوية بـ PDF
+      </li>
+      <li class="pro-feature-item">
+        <div class="pro-feature-check">✓</div>
+        مقارنات وإحصائيات متقدمة
+      </li>
+      <li class="pro-feature-item">
+        <div class="pro-feature-check">✓</div>
+        دعم عدة عملات (QAR, SAR, AED, KWD)
+      </li>
+      <li class="pro-feature-item">
+        <div class="pro-feature-check">✓</div>
+        تنبيهات ذكية للميزانية
+      </li>
+      <li class="pro-feature-item">
+        <div class="pro-feature-check">✓</div>
+        نسخ احتياطي سحابي عبر Supabase
+      </li>
+    </ul>
+    <div class="pro-price">
+      <div class="pro-price-main">15 <span style="font-size:18px">ر.ق</span></div>
+      <div class="pro-price-period">شهرياً · أو 120 ر.ق سنوياً (وفّر 33%)</div>
+    </div>
+    <button class="modal-btn primary" onclick="closeProModal()">🚀 ابدأ تجربة مجانية 7 أيام</button>
+    <button class="modal-btn secondary" onclick="closeProModal()">ليس الآن</button>
+  </div>
+</div>
+
+<!-- RESET CONFIRM MODAL -->
+<div class="modal-overlay" id="reset-modal" onclick="closeResetModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">تصفير الشهر؟</div>
+    <p style="text-align:center; color:var(--text2); font-size:14px; margin-bottom:24px; line-height:1.6;">
+      سيتم حذف جميع معاملات هذا الشهر. هذا الإجراء لا يمكن التراجع عنه.
+    </p>
+    <button class="modal-btn primary" style="background:linear-gradient(135deg,var(--red),#f87878);" onclick="doReset()">نعم، تصفير</button>
+    <button class="modal-btn secondary" onclick="closeResetModal()">إلغاء</button>
+  </div>
+</div>
+
+
+<script>
+// ─── DATA ───────────────────────────────
+const INITIAL_TRANSACTIONS = [
+  { id:1, desc:'لنش - مطعم ليوان', cat:'🍔 طعام', amount:85, currency:'QAR', time:'اليوم · 1:30 م', icon:'🍔', bg:'rgba(249,108,108,0.12)' },
+  { id:2, desc:'بنزين - Q8', cat:'🚗 مواصلات', amount:200, currency:'QAR', time:'اليوم · 11:20 ص', icon:'🚗', bg:'rgba(123,110,246,0.12)' },
+  { id:3, desc:'كارفور - تسوق أسبوعي', cat:'🛒 تسوق', amount:432, currency:'QAR', time:'أمس · 6:00 م', icon:'🛒', bg:'rgba(34,211,160,0.12)' },
+  { id:4, desc:'نتفليكس', cat:'🎮 ترفيه', amount:49, currency:'QAR', time:'أمس · 8:00 ص', icon:'🎮', bg:'rgba(255,209,102,0.12)' },
+  { id:5, desc:'صيدلية الدوحة', cat:'🏥 صحة', amount:120, currency:'QAR', time:'22 مايو', icon:'💊', bg:'rgba(34,211,160,0.12)' },
+];
+
+let transactions = JSON.parse(localStorage.getItem('ledger_txns') || 'null') || [...INITIAL_TRANSACTIONS];
+let nextId = Math.max(...transactions.map(t=>t.id)) + 1;
+let selectedCat = '🍔 طعام';
+let currentPage = 'home';
+
+// ─── RENDER ─────────────────────────────
+function renderTransactions() {
+  const list = document.getElementById('txn-list');
+  const sorted = [...transactions].reverse().slice(0,8);
+  list.innerHTML = sorted.map(t => `
+    <div class="txn-item">
+      <div class="txn-icon" style="background:${t.bg}">${t.icon || '💸'}</div>
+      <div class="txn-info">
+        <div class="txn-name">${t.desc}</div>
+        <div class="txn-meta">
+          <span>${t.cat}</span>
+          <span class="txn-meta-dot">·</span>
+          <span>${t.time}</span>
+        </div>
+      </div>
+      <div class="txn-amount expense">-${t.amount.toLocaleString()} ${t.currency}</div>
+    </div>
+  `).join('');
+
+  // update totals
+  const total = transactions.reduce((s,t)=>s+t.amount,0);
+  document.getElementById('total-display').textContent = total.toLocaleString();
+  document.getElementById('remaining-display').textContent = (18000-total).toLocaleString();
+  document.getElementById('txn-count').textContent = transactions.length;
+}
+
+function save() {
+  localStorage.setItem('ledger_txns', JSON.stringify(transactions));
+}
+
+// ─── ADD ────────────────────────────────
+function addTransaction() {
+  const amt = parseFloat(document.getElementById('txn-amount').value);
+  const desc = document.getElementById('txn-desc').value.trim() || 'مصروف جديد';
+  const currency = document.getElementById('txn-currency').value;
+  if (!amt || amt <= 0) {
+    document.getElementById('txn-amount').style.borderColor = 'var(--red)';
+    setTimeout(()=> document.getElementById('txn-amount').style.borderColor = '', 1000);
+    return;
+  }
+
+  const catMap = {
+    '🍔 طعام': {icon:'🍔', bg:'rgba(249,108,108,0.12)'},
+    '🚗 مواصلات': {icon:'🚗', bg:'rgba(123,110,246,0.12)'},
+    '🛒 تسوق': {icon:'🛒', bg:'rgba(34,211,160,0.12)'},
+    '🏥 صحة': {icon:'💊', bg:'rgba(34,211,160,0.12)'},
+    '🎮 ترفيه': {icon:'🎮', bg:'rgba(255,209,102,0.12)'},
+    '📦 أخرى': {icon:'📦', bg:'rgba(150,150,150,0.12)'},
+  };
+
+  const now = new Date();
+  const t = {
+    id: nextId++,
+    desc, cat: selectedCat,
+    amount: amt, currency,
+    time: 'الآن',
+    icon: catMap[selectedCat]?.icon || '💸',
+    bg: catMap[selectedCat]?.bg || 'rgba(150,150,150,0.12)'
+  };
+
+  transactions.push(t);
+  save();
+  renderTransactions();
+  document.getElementById('txn-amount').value = '';
+  document.getElementById('txn-desc').value = '';
+  showToast('✓ تم إضافة المصروف');
+}
+
+// ─── CAT SELECT ─────────────────────────
+function selectCat(el) {
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  selectedCat = el.dataset.cat;
+}
+
+// ─── TOAST ──────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// ─── PAGES ──────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const navMap = {home:'nav-home', stats:'nav-stats', profile:'nav-profile'};
+  if(navMap[name]) document.getElementById(navMap[name]).classList.add('active');
+  currentPage = name;
+  if(name === 'stats') drawMonthChart();
+}
+
+// ─── MODALS ─────────────────────────────
+function openProModal() {
+  document.getElementById('pro-modal').classList.add('open');
+}
+function closeProModal(e) {
+  if(!e || e.target === document.getElementById('pro-modal'))
+    document.getElementById('pro-modal').classList.remove('open');
+}
+function confirmReset() {
+  document.getElementById('reset-modal').classList.add('open');
+}
+function closeResetModal(e) {
+  if(!e || e.target === document.getElementById('reset-modal'))
+    document.getElementById('reset-modal').classList.remove('open');
+}
+function doReset() {
+  transactions = [];
+  nextId = 1;
+  save();
+  renderTransactions();
+  closeResetModal();
+  showToast('✓ تم تصفير الشهر');
+}
+
+// ─── CHARTS ─────────────────────────────
+function drawSpendChart() {
+  const canvas = document.getElementById('spendChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.offsetWidth;
+  const H = 120;
+  canvas.width = W;
+  canvas.height = H;
+
+  const days = ['الأح','الإث','الثل','الأر','الخم','الجم','السب'];
+  const current = [180, 320, 820, 250, 450, 300, 400];
+  const prev =    [200, 280, 450, 310, 380, 420, 350];
+  const max = Math.max(...current, ...prev) * 1.2;
+  const padL = 0, padR = 0, padT = 10, padB = 24;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+  const step = chartW / (days.length - 1);
+
+  ctx.clearRect(0,0,W,H);
+
+  // draw prev line (dimmed)
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  prev.forEach((v,i) => {
+    const x = padL + i * step;
+    const y = padT + chartH - (v/max)*chartH;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+
+  // draw current gradient fill
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(123,110,246,0.3)');
+  grad.addColorStop(1,'rgba(123,110,246,0)');
+
+  const points = current.map((v,i) => ({
+    x: padL + i * step,
+    y: padT + chartH - (v/max)*chartH
+  }));
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, padT + chartH);
+  ctx.lineTo(points[0].x, points[0].y);
+  for(let i=1;i<points.length;i++) {
+    const cp = {x:(points[i-1].x+points[i].x)/2, y:(points[i-1].y+points[i].y)/2};
+    ctx.quadraticCurveTo(points[i-1].x, points[i-1].y, cp.x, cp.y);
+  }
+  ctx.lineTo(points[points.length-1].x, points[points.length-1].y);
+  ctx.lineTo(points[points.length-1].x, padT+chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // draw current line
+  ctx.beginPath();
+  ctx.strokeStyle = '#7B6EF6';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  points.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+  ctx.stroke();
+
+  // draw dots
+  points.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3.5, 0, Math.PI*2);
+    ctx.fillStyle = '#7B6EF6';
+    ctx.fill();
+    ctx.strokeStyle = 'var(--bg)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+
+  // day labels
+  ctx.fillStyle = '#5C5A72';
+  ctx.font = '10px IBM Plex Sans Arabic';
+  ctx.textAlign = 'center';
+  days.forEach((d,i) => {
+    ctx.fillText(d, padL + i*step, H - 4);
+  });
+}
+
+function drawMonthChart() {
+  const canvas = document.getElementById('monthChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.parentElement.offsetWidth;
+  const H = 120;
+  canvas.width = W;
+  canvas.height = H;
+
+  const months = ['يناير','فبراير','مارس','أبريل','مايو'];
+  const data = [3200, 3800, 4100, 4210, 4720];
+  const max = Math.max(...data) * 1.2;
+  const padT = 10, padB = 28;
+  const chartH = H - padT - padB;
+  const barW = (W / months.length) * 0.5;
+  const gap = W / months.length;
+
+  ctx.clearRect(0,0,W,H);
+
+  data.forEach((v,i) => {
+    const x = i * gap + gap/2 - barW/2;
+    const barH = (v/max) * chartH;
+    const y = padT + chartH - barH;
+
+    // bar gradient
+    const grad = ctx.createLinearGradient(0, y, 0, y+barH);
+    if(i === data.length-1) {
+      grad.addColorStop(0,'#7B6EF6');
+      grad.addColorStop(1,'rgba(123,110,246,0.3)');
+    } else {
+      grad.addColorStop(0,'rgba(255,255,255,0.1)');
+      grad.addColorStop(1,'rgba(255,255,255,0.03)');
+    }
+
+    const r = 6;
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.lineTo(x+barW-r,y);
+    ctx.arcTo(x+barW,y,x+barW,y+r,r);
+    ctx.lineTo(x+barW,y+barH); ctx.lineTo(x,y+barH);
+    ctx.arcTo(x,y,x+r,y,r);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.fillStyle = i === data.length-1 ? '#9896B0' : '#5C5A72';
+    ctx.font = '9px Space Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(months[i].slice(0,3), x + barW/2, H - 8);
+  });
+}
+
+// ─── INIT ────────────────────────────────
+renderTransactions();
+setTimeout(drawSpendChart, 100);
+
+// enter to add
+document.getElementById('txn-amount').addEventListener('keydown', e => {
+  if(e.key === 'Enter') addTransaction();
+});
+document.getElementById('txn-desc').addEventListener('keydown', e => {
+  if(e.key === 'Enter') document.getElementById('txn-amount').focus();
+});
+</script>
+</body>
 </html>
