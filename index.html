@@ -40,6 +40,20 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
+  /* English uses native device font; numbers always mono */
+  html[data-lang="en"] body,
+  html[data-lang="en"] .greeting-name,
+  html[data-lang="en"] .section-title,
+  html[data-lang="en"] .txn-name,
+  html[data-lang="en"] .cat-btn,
+  html[data-lang="en"] .chart-tab,
+  html[data-lang="en"] .nav-label,
+  html[data-lang="en"] .input-desc,
+  html[data-lang="en"] .pro-cta,
+  html[data-lang="en"] .settings-item-title,
+  html[data-lang="en"] .settings-item-sub {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
 
   /* ─── BACKGROUND EFFECTS ─── */
   .bg-orb {
@@ -920,33 +934,33 @@
 
     <!-- Greeting -->
     <div class="greeting">
-      <div class="greeting-sub">مرحباً،</div>
+      <div class="greeting-sub" data-t="welcome">مرحباً،</div>
       <div class="greeting-name">محمد 👋</div>
     </div>
 
     <!-- Balance Card -->
     <div class="balance-card">
-      <div class="balance-label">إجمالي المصاريف · مايو ٢٠٢٦</div>
+      <div class="balance-label" data-t="monthExp">إجمالي المصاريف · مايو ٢٠٢٦</div>
       <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:4px;">
         <div class="balance-amount" id="total-display">4,720</div>
-        <div class="balance-currency">ر.ق</div>
+        <div class="balance-currency" id="main-cur-lbl">ر.ق</div>
       </div>
       <div class="balance-change">
         <span class="change-pill red">↑ 12%</span>
-        <span>مقارنةً بأبريل</span>
+        <span data-t="vsLastMonth">مقارنةً بأبريل</span>
       </div>
       <div class="balance-stats">
         <div class="stat-item">
           <div class="stat-label">
             <div class="stat-dot" style="background:var(--green)"></div>
-            دخل الشهر
+            <span data-t="income">دخل الشهر</span>
           </div>
           <div class="stat-value green">18,000</div>
         </div>
         <div class="stat-item">
           <div class="stat-label">
             <div class="stat-dot" style="background:var(--accent2)"></div>
-            المتبقي
+            <span data-t="remaining">المتبقي</span>
           </div>
           <div class="stat-value" style="color:var(--accent2)" id="remaining-display">13,280</div>
         </div>
@@ -957,22 +971,23 @@
     <div class="budget-alert">
       <div class="alert-icon">⚠️</div>
       <div class="alert-text">
-        اقتربت من حد الميزانية
-        <div class="alert-sub">مصاريف الترفيه وصلت 85% من الميزانية</div>
+        <span data-t="budgetWarn">اقتربت من حد الميزانية</span>
+        <div class="alert-sub" data-t="budgetSub">مصاريف الترفيه وصلت 85% من الميزانية</div>
       </div>
     </div>
 
     <!-- Quick Add -->
     <div class="add-form">
       <div style="padding:0 20px; margin-bottom:10px;">
-        <input type="text" class="input-desc" id="txn-desc" placeholder="وصف المصروف... (مثال: غداء، بنزين)">
+        <input type="text" class="input-desc" id="txn-desc" id="txn-desc-ph" placeholder="وصف المصروف... (مثال: غداء، بنزين)">
       </div>
       <div class="quick-add">
         <div class="input-group">
-          <select class="input-currency" id="txn-currency">
+          <select class="input-currency" id="txn-currency" onchange="cur=this.value;localStorage.setItem('ledger_cur',cur);updateCurUI();">
             <option>QAR</option>
             <option>SAR</option>
             <option>AED</option>
+            <option>KWD</option>
             <option>USD</option>
           </select>
           <input type="number" class="input-amount" id="txn-amount" placeholder="0.00">
@@ -981,46 +996,46 @@
       </div>
       <div style="padding:0 20px; margin-top:10px;">
         <div class="categories" id="categories">
-          <div class="cat-btn active" data-cat="🍔 طعام" onclick="selectCat(this)">🍔 طعام</div>
-          <div class="cat-btn" data-cat="🚗 مواصلات" onclick="selectCat(this)">🚗 مواصلات</div>
-          <div class="cat-btn" data-cat="🛒 تسوق" onclick="selectCat(this)">🛒 تسوق</div>
-          <div class="cat-btn" data-cat="🏥 صحة" onclick="selectCat(this)">🏥 صحة</div>
-          <div class="cat-btn" data-cat="🎮 ترفيه" onclick="selectCat(this)">🎮 ترفيه</div>
-          <div class="cat-btn" data-cat="📦 أخرى" onclick="selectCat(this)">📦 أخرى</div>
+          <div class="cat-btn active" data-cat-ar="🍔 طعام" data-cat-en="🍔 Food" onclick="selectCat(this)">🍔 <span data-t="catFood">طعام</span></div>
+          <div class="cat-btn" data-cat-ar="🚗 مواصلات" data-cat-en="🚗 Transport" onclick="selectCat(this)">🚗 <span data-t="catTrans">مواصلات</span></div>
+          <div class="cat-btn" data-cat-ar="🛒 تسوق" data-cat-en="🛒 Shopping" onclick="selectCat(this)">🛒 <span data-t="catShop">تسوق</span></div>
+          <div class="cat-btn" data-cat-ar="🏥 صحة" data-cat-en="🏥 Health" onclick="selectCat(this)">🏥 <span data-t="catHealth">صحة</span></div>
+          <div class="cat-btn" data-cat-ar="🎮 ترفيه" data-cat-en="🎮 Entertain" onclick="selectCat(this)">🎮 <span data-t="catEnt">ترفيه</span></div>
+          <div class="cat-btn" data-cat-ar="📦 أخرى" data-cat-en="📦 Other" onclick="selectCat(this)">📦 <span data-t="catOther">أخرى</span></div>
         </div>
       </div>
     </div>
 
     <!-- Chart -->
     <div class="section-header">
-      <div class="section-title">المصاريف — ٧ أيام</div>
-      <div class="section-link">الشهر كاملاً ←</div>
+      <div class="section-title" data-t="last7">المصاريف — ٧ أيام</div>
+      <div class="section-link" data-t="fullMonth">الشهر كاملاً ←</div>
     </div>
     <div class="chart-card">
       <div class="chart-tabs">
-        <button class="chart-tab active">أسبوع</button>
-        <button class="chart-tab" onclick="openProModal()">شهر ⚡</button>
-        <button class="chart-tab" onclick="openProModal()">سنة ⚡</button>
+        <button class="chart-tab active" data-t="week">أسبوع</button>
+        <button class="chart-tab" onclick="openProModal()" data-t="month">شهر ⚡</button>
+        <button class="chart-tab" onclick="openProModal()" data-t="year">سنة ⚡</button>
       </div>
       <div class="chart-wrap">
         <canvas id="spendChart" height="120"></canvas>
       </div>
       <div class="chart-legend">
-        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>هذا الأسبوع</div>
-        <div class="legend-item"><div class="legend-dot" style="background:var(--surface3)"></div>الأسبوع الماضي</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div><span data-t="thisWeek">هذا الأسبوع</span></div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--surface3)"></div><span data-t="lastWeek">الأسبوع الماضي</span></div>
       </div>
     </div>
 
     <!-- Breakdown -->
     <div class="section-header">
-      <div class="section-title">توزيع المصاريف</div>
+      <div class="section-title" data-t="breakdown">توزيع المصاريف</div>
     </div>
     <div class="breakdown-card">
       <div class="breakdown-item">
         <div class="breakdown-top">
           <div class="breakdown-name">
             <div class="breakdown-icon" style="background:rgba(249,108,108,0.15)">🍔</div>
-            طعام ومشروبات
+            <span data-t="catFoodLong">طعام ومشروبات</span>
           </div>
           <div class="breakdown-amount">1,850 ر.ق</div>
         </div>
@@ -1032,7 +1047,7 @@
         <div class="breakdown-top">
           <div class="breakdown-name">
             <div class="breakdown-icon" style="background:rgba(123,110,246,0.15)">🚗</div>
-            مواصلات
+            <span data-t="catTrans">مواصلات</span>
           </div>
           <div class="breakdown-amount">920 ر.ق</div>
         </div>
@@ -1044,7 +1059,7 @@
         <div class="breakdown-top">
           <div class="breakdown-name">
             <div class="breakdown-icon" style="background:rgba(34,211,160,0.15)">🛒</div>
-            تسوق
+            <span data-t="catShop">تسوق</span>
           </div>
           <div class="breakdown-amount">1,200 ر.ق</div>
         </div>
@@ -1056,7 +1071,7 @@
         <div class="breakdown-top">
           <div class="breakdown-name">
             <div class="breakdown-icon" style="background:rgba(255,209,102,0.15)">🎮</div>
-            ترفيه
+            <span data-t="catEnt">ترفيه</span>
           </div>
           <div class="breakdown-amount">750 ر.ق</div>
         </div>
@@ -1068,8 +1083,8 @@
 
     <!-- Recent Transactions -->
     <div class="section-header">
-      <div class="section-title">آخر المعاملات</div>
-      <div class="section-link">الكل ←</div>
+      <div class="section-title" data-t="recent">آخر المعاملات</div>
+      <div class="section-link" data-t="seeAll">الكل ←</div>
     </div>
     <div class="txn-list" id="txn-list">
       <!-- Injected by JS -->
@@ -1079,10 +1094,10 @@
     <div class="pro-banner" onclick="openProModal()">
       <div class="pro-icon">⚡</div>
       <div class="pro-text">
-        <div class="pro-title">فعّل Ledger Pro</div>
-        <div class="pro-sub">قراءة SMS تلقائية + تقارير PDF</div>
+        <div class="pro-title" data-t="proTitle">فعّل Ledger Pro</div>
+        <div class="pro-sub" data-t="proSub">قراءة SMS تلقائية + تقارير PDF</div>
       </div>
-      <button class="pro-cta">جرّبه</button>
+      <button class="pro-cta" data-t="tryIt">جرّبه</button>
     </div>
 
   </div><!-- /home page -->
@@ -1097,34 +1112,34 @@
       </div>
     </div>
     <div class="greeting">
-      <div class="greeting-sub">إحصائياتك</div>
-      <div class="greeting-name">مايو ٢٠٢٦ 📊</div>
+      <div class="greeting-sub" data-t="yourStats">إحصائياتك</div>
+      <div class="greeting-name" data-t="statsTitle">مايو ٢٠٢٦ 📊</div>
     </div>
     <div class="stats-grid">
       <div class="stats-tile">
-        <div class="stats-tile-label">إجمالي المصاريف</div>
+        <div class="stats-tile-label" data-t="totalExp">إجمالي المصاريف</div>
         <div class="stats-tile-val red">4,720</div>
-        <div class="stats-tile-change" style="color:var(--red)">↑ 12% عن أبريل</div>
+        <div class="stats-tile-change" style="color:var(--red)"><span data-t="upVs">↑ 12% عن أبريل</span></div>
       </div>
       <div class="stats-tile">
-        <div class="stats-tile-label">أعلى يوم إنفاق</div>
-        <div class="stats-tile-val">الثلاثاء</div>
+        <div class="stats-tile-label" data-t="topDay">أعلى يوم إنفاق</div>
+        <div class="stats-tile-val" data-t="tuesday">الثلاثاء</div>
         <div class="stats-tile-change" style="color:var(--text3)">820 ر.ق</div>
       </div>
       <div class="stats-tile">
-        <div class="stats-tile-label">متوسط يومي</div>
+        <div class="stats-tile-label" data-t="dailyAvg">متوسط يومي</div>
         <div class="stats-tile-val">157</div>
-        <div class="stats-tile-change" style="color:var(--text3)">ر.ق / يوم</div>
+        <div class="stats-tile-change" style="color:var(--text3)" data-t="perDay">ر.ق / يوم</div>
       </div>
       <div class="stats-tile">
-        <div class="stats-tile-label">المعاملات</div>
+        <div class="stats-tile-label" data-t="transactions">المعاملات</div>
         <div class="stats-tile-val green" id="txn-count">8</div>
-        <div class="stats-tile-change" style="color:var(--text3)">هذا الشهر</div>
+        <div class="stats-tile-change" style="color:var(--text3)" data-t="thisMonth">هذا الشهر</div>
       </div>
     </div>
     <div class="section-header">
-      <div class="section-title">مقارنة الأشهر</div>
-      <div class="section-link" onclick="openProModal()">تقرير سنوي ⚡</div>
+      <div class="section-title" data-t="monthComp">مقارنة الأشهر</div>
+      <div class="section-link" onclick="openProModal()" data-t="annualRep">تقرير سنوي ⚡</div>
     </div>
     <div class="chart-card">
       <div class="chart-wrap">
@@ -1132,7 +1147,7 @@
       </div>
     </div>
     <div class="section-header">
-      <div class="section-title">أكثر الفئات إنفاقاً</div>
+      <div class="section-title" data-t="topCats">أكثر الفئات إنفاقاً</div>
     </div>
     <div class="breakdown-card">
       <div style="display:flex; flex-direction:column; gap:14px;">
@@ -1157,8 +1172,8 @@
     <div class="pro-banner" onclick="openProModal()" style="margin-top:8px;">
       <div class="pro-icon">📄</div>
       <div class="pro-text">
-        <div class="pro-title">تصدير تقرير PDF</div>
-        <div class="pro-sub">احترافي وجاهز للمشاركة</div>
+        <div class="pro-title" data-t="exportPdf">تصدير تقرير PDF</div>
+        <div class="pro-sub" data-t="readyShare">احترافي وجاهز للمشاركة</div>
       </div>
       <button class="pro-cta">Pro ⚡</button>
     </div>
@@ -1174,54 +1189,54 @@
       <div class="avatar">👤</div>
       <div class="profile-name">محمد</div>
       <div class="profile-email">mohd@example.com</div>
-      <div class="profile-badge">🆓 مجاني</div>
+      <div class="profile-badge"><span data-t="freePlan">🆓 مجاني</span></div>
     </div>
     <div class="settings-list">
-      <div class="settings-item">
+      <div class="settings-item" onclick="openCurModal()">
         <div class="settings-item-icon">💰</div>
         <div class="settings-item-text">
-          <div class="settings-item-title">العملة الافتراضية</div>
-          <div class="settings-item-sub">ريال قطري (QAR)</div>
+          <div class="settings-item-title" data-t="defCur">العملة الافتراضية</div>
+          <div class="settings-item-sub" id="cur-sub">ريال قطري (QAR)</div>
         </div>
         <div class="settings-arrow">›</div>
       </div>
-      <div class="settings-item">
+      <div class="settings-item" onclick="openLangModal()">
         <div class="settings-item-icon">🌐</div>
         <div class="settings-item-text">
-          <div class="settings-item-title">اللغة</div>
-          <div class="settings-item-sub">العربية</div>
+          <div class="settings-item-title" data-t="language">اللغة</div>
+          <div class="settings-item-sub" id="lang-sub">العربية</div>
         </div>
         <div class="settings-arrow">›</div>
       </div>
-      <div class="settings-item">
+      <div class="settings-item" onclick="openBudgetModal()">
         <div class="settings-item-icon">📊</div>
         <div class="settings-item-text">
-          <div class="settings-item-title">حد الميزانية الشهرية</div>
-          <div class="settings-item-sub">5,000 ر.ق</div>
+          <div class="settings-item-title" data-t="budgetLimit">حد الميزانية الشهرية</div>
+          <div class="settings-item-sub" id="budget-sub">5,000 ر.ق</div>
         </div>
         <div class="settings-arrow">›</div>
       </div>
       <div class="settings-item" onclick="openProModal()">
         <div class="settings-item-icon">📱</div>
         <div class="settings-item-text">
-          <div class="settings-item-title">قراءة SMS تلقائية ⚡</div>
-          <div class="settings-item-sub">Pro فقط</div>
+          <div class="settings-item-title"><span data-t="autoSms">قراءة SMS تلقائية</span> ⚡</div>
+          <div class="settings-item-sub" data-t="proOnly">Pro فقط</div>
         </div>
         <div class="settings-arrow">›</div>
       </div>
       <div class="settings-item">
         <div class="settings-item-icon">🔒</div>
         <div class="settings-item-text">
-          <div class="settings-item-title">الخصوصية والأمان</div>
-          <div class="settings-item-sub">بياناتك محفوظة محلياً</div>
+          <div class="settings-item-title" data-t="privacy">الخصوصية والأمان</div>
+          <div class="settings-item-sub" data-t="localData">بياناتك محفوظة محلياً</div>
         </div>
         <div class="settings-arrow">›</div>
       </div>
       <div class="settings-item" onclick="confirmReset()">
         <div class="settings-item-icon">🔄</div>
         <div class="settings-item-text">
-          <div class="settings-item-title">تصفير الشهر</div>
-          <div class="settings-item-sub">حذف كل معاملات هذا الشهر</div>
+          <div class="settings-item-title" data-t="resetMonth">تصفير الشهر</div>
+          <div class="settings-item-sub" data-t="resetSub">حذف كل معاملات هذا الشهر</div>
         </div>
         <div class="settings-arrow">›</div>
       </div>
@@ -1238,11 +1253,11 @@
 <nav class="bottom-nav">
   <div class="nav-item active" id="nav-home" onclick="showPage('home')">
     <div class="nav-icon">🏠</div>
-    <div class="nav-label">الرئيسية</div>
+    <div class="nav-label" data-t="navHome">الرئيسية</div>
   </div>
   <div class="nav-item" id="nav-stats" onclick="showPage('stats')">
     <div class="nav-icon">📊</div>
-    <div class="nav-label">الإحصائيات</div>
+    <div class="nav-label" data-t="navStats">الإحصائيات</div>
   </div>
   <div class="nav-item" id="nav-pro" onclick="openProModal()">
     <div class="nav-icon">⚡</div>
@@ -1250,7 +1265,7 @@
   </div>
   <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
     <div class="nav-icon">👤</div>
-    <div class="nav-label">الحساب</div>
+    <div class="nav-label" data-t="navProfile">الحساب</div>
   </div>
 </nav>
 
@@ -1263,35 +1278,35 @@
     <ul class="pro-features">
       <li class="pro-feature-item">
         <div class="pro-feature-check">✓</div>
-        قراءة SMS البنك تلقائياً وتصنيف المصاريف
+        <span data-t="f1">قراءة SMS البنك تلقائياً وتصنيف المصاريف</span>
       </li>
       <li class="pro-feature-item">
         <div class="pro-feature-check">✓</div>
-        تقارير شهرية وسنوية بـ PDF
+        <span data-t="f2">تقارير شهرية وسنوية بـ PDF</span>
       </li>
       <li class="pro-feature-item">
         <div class="pro-feature-check">✓</div>
-        مقارنات وإحصائيات متقدمة
+        <span data-t="f3">مقارنات وإحصائيات متقدمة</span>
       </li>
       <li class="pro-feature-item">
         <div class="pro-feature-check">✓</div>
-        دعم عدة عملات (QAR, SAR, AED, KWD)
+        <span data-t="f4">دعم عدة عملات (QAR, SAR, AED, KWD)</span>
       </li>
       <li class="pro-feature-item">
         <div class="pro-feature-check">✓</div>
-        تنبيهات ذكية للميزانية
+        <span data-t="f5">تنبيهات ذكية للميزانية</span>
       </li>
       <li class="pro-feature-item">
         <div class="pro-feature-check">✓</div>
-        نسخ احتياطي سحابي عبر Supabase
+        <span data-t="f6">نسخ احتياطي سحابي عبر Supabase</span>
       </li>
     </ul>
     <div class="pro-price">
       <div class="pro-price-main">15 <span style="font-size:18px">ر.ق</span></div>
-      <div class="pro-price-period">شهرياً · أو 120 ر.ق سنوياً (وفّر 33%)</div>
+      <div class="pro-price-period" data-t="pricePer">شهرياً · أو 120 ر.ق سنوياً (وفّر 33%)</div>
     </div>
-    <button class="modal-btn primary" onclick="closeProModal()">🚀 ابدأ تجربة مجانية 7 أيام</button>
-    <button class="modal-btn secondary" onclick="closeProModal()">ليس الآن</button>
+    <button class="modal-btn primary" onclick="closeProModal()" data-t="startTrial">🚀 ابدأ تجربة مجانية 7 أيام</button>
+    <button class="modal-btn secondary" onclick="closeProModal()" data-t="notNow">ليس الآن</button>
   </div>
 </div>
 
@@ -1299,17 +1314,187 @@
 <div class="modal-overlay" id="reset-modal" onclick="closeResetModal(event)">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-title">تصفير الشهر؟</div>
-    <p style="text-align:center; color:var(--text2); font-size:14px; margin-bottom:24px; line-height:1.6;">
+    <div class="modal-title" data-t="resetQ">تصفير الشهر؟</div>
+    <p style="text-align:center; color:var(--text2); font-size:14px; margin-bottom:24px; line-height:1.6;" data-t="resetWarn">
       سيتم حذف جميع معاملات هذا الشهر. هذا الإجراء لا يمكن التراجع عنه.
     </p>
-    <button class="modal-btn primary" style="background:linear-gradient(135deg,var(--red),#f87878);" onclick="doReset()">نعم، تصفير</button>
-    <button class="modal-btn secondary" onclick="closeResetModal()">إلغاء</button>
+    <button class="modal-btn primary" style="background:linear-gradient(135deg,var(--red),#f87878);" onclick="doReset()" data-t="yesReset">نعم، تصفير</button>
+    <button class="modal-btn secondary" onclick="closeResetModal()" data-t="cancel">إلغاء</button>
   </div>
 </div>
 
+<!-- CURRENCY MODAL -->
+<div class="modal-overlay" id="cur-modal" onclick="closeCurModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-t="defCur">العملة الافتراضية</div>
+    <div id="cur-options"></div>
+    <button class="modal-btn secondary" onclick="closeCurModal()" style="margin-top:8px;" data-t="cancel">إلغاء</button>
+  </div>
+</div>
+
+<!-- LANGUAGE MODAL -->
+<div class="modal-overlay" id="lang-modal" onclick="closeLangModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">اللغة · Language</div>
+    <div id="lang-options"></div>
+    <button class="modal-btn secondary" onclick="closeLangModal()" style="margin-top:8px;" data-t="cancel">إلغاء</button>
+  </div>
+</div>
+
+<!-- BUDGET MODAL -->
+<div class="modal-overlay" id="budget-modal" onclick="closeBudgetModal(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-t="budgetLimit">حد الميزانية الشهرية</div>
+    <div class="input-group" style="margin-bottom:16px;">
+      <input type="number" inputmode="decimal" class="input-amount" id="budget-input" placeholder="5000" style="text-align:center;">
+    </div>
+    <button class="modal-btn primary" onclick="saveBudget()" data-t="save">حفظ</button>
+    <button class="modal-btn secondary" onclick="closeBudgetModal()" data-t="cancel">إلغاء</button>
+  </div>
+</div>
+
+<style>
+/* option rows for currency & language pickers — match existing aesthetic */
+.opt-row{display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:8px;cursor:pointer;transition:all .15s;color:var(--text2);font-size:14px;
+  background:var(--surface2);}
+.opt-row:hover{border-color:var(--accent);}
+.opt-row.sel{background:var(--accent-glow);border-color:var(--accent);color:var(--accent2);font-weight:600;}
+.opt-check{color:var(--accent);font-size:16px;}
+</style>
 
 <script>
+// ─── I18N / CURRENCY / BUDGET ───────────
+const CURRENCIES = [
+  {code:'QAR', ar:'ريال قطري',    en:'Qatari Riyal', sym:'ر.ق'},
+  {code:'SAR', ar:'ريال سعودي',   en:'Saudi Riyal',  sym:'ر.س'},
+  {code:'AED', ar:'درهم إماراتي', en:'UAE Dirham',   sym:'د.إ'},
+  {code:'KWD', ar:'دينار كويتي',  en:'Kuwaiti Dinar',sym:'د.ك'},
+  {code:'USD', ar:'دولار أمريكي', en:'US Dollar',    sym:'$'},
+];
+const LANGS = [{code:'ar',label:'العربية'},{code:'en',label:'English'}];
+
+const T = {
+  ar:{
+    welcome:'مرحباً،', monthExp:'إجمالي المصاريف · مايو ٢٠٢٦', vsLastMonth:'مقارنةً بالشهر الماضي',
+    income:'دخل الشهر', remaining:'المتبقي', budgetWarn:'اقتربت من حد الميزانية',
+    budgetSub:'مصاريف الترفيه وصلت 85% من الميزانية', last7:'المصاريف — ٧ أيام', fullMonth:'الشهر كاملاً ←',
+    week:'أسبوع', month:'شهر ⚡', year:'سنة ⚡', thisWeek:'هذا الأسبوع', lastWeek:'الأسبوع الماضي',
+    breakdown:'توزيع المصاريف', recent:'آخر المعاملات', seeAll:'الكل ←',
+    proTitle:'فعّل Ledger Pro', proSub:'قراءة SMS تلقائية + تقارير PDF', tryIt:'جرّبه',
+    yourStats:'إحصائياتك', statsTitle:'مايو ٢٠٢٦ 📊', totalExp:'إجمالي المصاريف', upVs:'↑ 12% عن الشهر الماضي',
+    topDay:'أعلى يوم إنفاق', tuesday:'الثلاثاء', dailyAvg:'متوسط يومي', perDay:'/ يوم',
+    transactions:'المعاملات', thisMonth:'هذا الشهر', monthComp:'مقارنة الأشهر', annualRep:'تقرير سنوي ⚡',
+    topCats:'أكثر الفئات إنفاقاً', exportPdf:'تصدير تقرير PDF', readyShare:'احترافي وجاهز للمشاركة',
+    freePlan:'🆓 مجاني', defCur:'العملة الافتراضية', language:'اللغة', budgetLimit:'حد الميزانية الشهرية',
+    autoSms:'قراءة SMS تلقائية', proOnly:'Pro فقط', privacy:'الخصوصية والأمان', localData:'بياناتك محفوظة محلياً',
+    resetMonth:'تصفير الشهر', resetSub:'حذف كل معاملات هذا الشهر',
+    navHome:'الرئيسية', navStats:'الإحصائيات', navProfile:'الحساب',
+    f1:'قراءة SMS البنك تلقائياً وتصنيف المصاريف', f2:'تقارير شهرية وسنوية بـ PDF',
+    f3:'مقارنات وإحصائيات متقدمة', f4:'دعم عدة عملات (QAR, SAR, AED, KWD)',
+    f5:'تنبيهات ذكية للميزانية', f6:'نسخ احتياطي سحابي عبر Supabase',
+    pricePer:'شهرياً · أو 120 QAR سنوياً (وفّر 33%)', startTrial:'🚀 ابدأ تجربة مجانية 7 أيام', notNow:'ليس الآن',
+    resetQ:'تصفير الشهر؟', resetWarn:'سيتم حذف جميع معاملات هذا الشهر. هذا الإجراء لا يمكن التراجع عنه.',
+    yesReset:'نعم، تصفير', cancel:'إلغاء', save:'حفظ',
+    catFood:'طعام', catFoodLong:'طعام ومشروبات', catTrans:'مواصلات', catShop:'تسوق', catHealth:'صحة', catEnt:'ترفيه', catOther:'أخرى',
+    tAdded:'✓ تم إضافة المصروف', tReset:'✓ تم تصفير الشهر', tSaved:'✓ تم الحفظ',
+    newExp:'مصروف جديد', now:'الآن', descPh:'وصف المصروف... (مثال: غداء، بنزين)',
+  },
+  en:{
+    welcome:'Hello,', monthExp:'Total Expenses · May 2026', vsLastMonth:'vs last month',
+    income:'Monthly Income', remaining:'Remaining', budgetWarn:'Approaching budget limit',
+    budgetSub:'Entertainment reached 85% of budget', last7:'Expenses — 7 Days', fullMonth:'Full Month →',
+    week:'Week', month:'Month ⚡', year:'Year ⚡', thisWeek:'This week', lastWeek:'Last week',
+    breakdown:'Expense Breakdown', recent:'Recent Transactions', seeAll:'See All →',
+    proTitle:'Activate Ledger Pro', proSub:'Auto SMS + PDF reports', tryIt:'Try it',
+    yourStats:'Your Stats', statsTitle:'May 2026 📊', totalExp:'Total Expenses', upVs:'↑ 12% vs last month',
+    topDay:'Top Spend Day', tuesday:'Tuesday', dailyAvg:'Daily Average', perDay:'/ day',
+    transactions:'Transactions', thisMonth:'This month', monthComp:'Monthly Comparison', annualRep:'Annual Report ⚡',
+    topCats:'Top Spending Categories', exportPdf:'Export PDF Report', readyShare:'Professional & ready to share',
+    freePlan:'🆓 Free', defCur:'Default Currency', language:'Language', budgetLimit:'Monthly Budget Limit',
+    autoSms:'Auto SMS Reading', proOnly:'Pro only', privacy:'Privacy & Security', localData:'Data stored locally',
+    resetMonth:'Reset Month', resetSub:'Delete all transactions this month',
+    navHome:'Home', navStats:'Stats', navProfile:'Account',
+    f1:'Auto-read bank SMS and categorize expenses', f2:'Monthly & yearly PDF reports',
+    f3:'Advanced comparisons & statistics', f4:'Multi-currency support (QAR, SAR, AED, KWD)',
+    f5:'Smart budget alerts', f6:'Cloud backup via Supabase',
+    pricePer:'Monthly · or 120 QAR/year (save 33%)', startTrial:'🚀 Start 7-day Free Trial', notNow:'Not Now',
+    resetQ:'Reset Month?', resetWarn:'All transactions this month will be deleted. This cannot be undone.',
+    yesReset:'Yes, Reset', cancel:'Cancel', save:'Save',
+    catFood:'Food', catFoodLong:'Food & Drinks', catTrans:'Transport', catShop:'Shopping', catHealth:'Health', catEnt:'Entertain', catOther:'Other',
+    tAdded:'✓ Expense added', tReset:'✓ Month reset', tSaved:'✓ Saved',
+    newExp:'New expense', now:'Now', descPh:'Description... (e.g. lunch, fuel)',
+  }
+};
+
+let lang   = localStorage.getItem('ledger_lang')   || 'ar';
+let cur    = localStorage.getItem('ledger_cur')    || 'QAR';
+let budget = parseInt(localStorage.getItem('ledger_budget')) || 5000;
+
+function tr(k){ return (T[lang] && T[lang][k]) || T.ar[k] || k; }
+
+function applyLang(){
+  const ar = lang==='ar';
+  document.documentElement.lang = lang;
+  document.documentElement.dir  = ar ? 'rtl' : 'ltr';
+  document.documentElement.setAttribute('data-lang', lang);
+  document.querySelectorAll('[data-t]').forEach(el=>{ el.textContent = tr(el.getAttribute('data-t')); });
+  const ph=document.getElementById('txn-desc-ph'); if(ph) ph.placeholder = tr('descPh');
+  const ls=document.getElementById('lang-sub'); if(ls) ls.textContent = ar?'العربية':'English';
+  // active category re-sync to current lang label
+  const activeCat=document.querySelector('.cat-btn.active');
+  if(activeCat) selectedCat = activeCat.getAttribute('data-cat-'+lang);
+  updateCurUI();
+  renderTransactions();
+  if(typeof drawSpendChart==='function') setTimeout(drawSpendChart,30);
+  if(currentPage==='stats' && typeof drawMonthChart==='function') setTimeout(drawMonthChart,30);
+}
+
+function updateCurUI(){
+  const c = CURRENCIES.find(x=>x.code===cur) || CURRENCIES[0];
+  const lbl = document.getElementById('main-cur-lbl'); if(lbl) lbl.textContent = c.sym;
+  const cs  = document.getElementById('cur-sub');
+  if(cs) cs.textContent = (lang==='ar'?c.ar:c.en)+' ('+c.code+')';
+  const bs  = document.getElementById('budget-sub');
+  if(bs) bs.textContent = budget.toLocaleString()+' '+cur;
+  const sel = document.getElementById('txn-currency'); if(sel) sel.value = cur;
+}
+
+// ── currency modal ──
+function openCurModal(){
+  const box=document.getElementById('cur-options');
+  box.innerHTML = CURRENCIES.map(c=>`
+    <div class="opt-row ${c.code===cur?'sel':''}" onclick="pickCur('${c.code}')">
+      <span>${lang==='ar'?c.ar:c.en} (${c.code})</span>
+      ${c.code===cur?'<span class="opt-check">✓</span>':''}
+    </div>`).join('');
+  document.getElementById('cur-modal').classList.add('open');
+}
+function closeCurModal(e){ if(!e||e.target===document.getElementById('cur-modal')) document.getElementById('cur-modal').classList.remove('open'); }
+function pickCur(code){ cur=code; localStorage.setItem('ledger_cur',code); updateCurUI(); openCurModal(); showToast(tr('tSaved')); }
+
+// ── language modal ──
+function openLangModal(){
+  const box=document.getElementById('lang-options');
+  box.innerHTML = LANGS.map(l=>`
+    <div class="opt-row ${l.code===lang?'sel':''}" onclick="pickLang('${l.code}')">
+      <span>${l.label}</span>
+      ${l.code===lang?'<span class="opt-check">✓</span>':''}
+    </div>`).join('');
+  document.getElementById('lang-modal').classList.add('open');
+}
+function closeLangModal(e){ if(!e||e.target===document.getElementById('lang-modal')) document.getElementById('lang-modal').classList.remove('open'); }
+function pickLang(code){ lang=code; localStorage.setItem('ledger_lang',code); applyLang(); closeLangModal(); showToast(tr('tSaved')); }
+
+// ── budget modal ──
+function openBudgetModal(){ document.getElementById('budget-input').value=budget; document.getElementById('budget-modal').classList.add('open'); }
+function closeBudgetModal(e){ if(!e||e.target===document.getElementById('budget-modal')) document.getElementById('budget-modal').classList.remove('open'); }
+function saveBudget(){ const v=parseInt(document.getElementById('budget-input').value); if(v>0){budget=v;localStorage.setItem('ledger_budget',v);updateCurUI();} closeBudgetModal(); showToast(tr('tSaved')); }
+
 // ─── DATA ───────────────────────────────
 const INITIAL_TRANSACTIONS = [
   { id:1, desc:'لنش - مطعم ليوان', cat:'🍔 طعام', amount:85, currency:'QAR', time:'اليوم · 1:30 م', icon:'🍔', bg:'rgba(249,108,108,0.12)' },
@@ -1321,7 +1506,7 @@ const INITIAL_TRANSACTIONS = [
 
 let transactions = JSON.parse(localStorage.getItem('ledger_txns') || 'null') || [...INITIAL_TRANSACTIONS];
 let nextId = Math.max(...transactions.map(t=>t.id)) + 1;
-let selectedCat = '🍔 طعام';
+let selectedCat = (localStorage.getItem('ledger_lang')||'ar')==='ar' ? '🍔 طعام' : '🍔 Food';
 let currentPage = 'home';
 
 // ─── RENDER ─────────────────────────────
@@ -1357,7 +1542,7 @@ function save() {
 // ─── ADD ────────────────────────────────
 function addTransaction() {
   const amt = parseFloat(document.getElementById('txn-amount').value);
-  const desc = document.getElementById('txn-desc').value.trim() || 'مصروف جديد';
+  const desc = document.getElementById('txn-desc').value.trim() || tr('newExp');
   const currency = document.getElementById('txn-currency').value;
   if (!amt || amt <= 0) {
     document.getElementById('txn-amount').style.borderColor = 'var(--red)';
@@ -1372,14 +1557,19 @@ function addTransaction() {
     '🏥 صحة': {icon:'💊', bg:'rgba(34,211,160,0.12)'},
     '🎮 ترفيه': {icon:'🎮', bg:'rgba(255,209,102,0.12)'},
     '📦 أخرى': {icon:'📦', bg:'rgba(150,150,150,0.12)'},
+    '🍔 Food': {icon:'🍔', bg:'rgba(249,108,108,0.12)'},
+    '🚗 Transport': {icon:'🚗', bg:'rgba(123,110,246,0.12)'},
+    '🛒 Shopping': {icon:'🛒', bg:'rgba(34,211,160,0.12)'},
+    '🏥 Health': {icon:'💊', bg:'rgba(34,211,160,0.12)'},
+    '🎮 Entertain': {icon:'🎮', bg:'rgba(255,209,102,0.12)'},
+    '📦 Other': {icon:'📦', bg:'rgba(150,150,150,0.12)'},
   };
 
-  const now = new Date();
   const t = {
     id: nextId++,
     desc, cat: selectedCat,
     amount: amt, currency,
-    time: 'الآن',
+    time: tr('now'),
     icon: catMap[selectedCat]?.icon || '💸',
     bg: catMap[selectedCat]?.bg || 'rgba(150,150,150,0.12)'
   };
@@ -1389,14 +1579,14 @@ function addTransaction() {
   renderTransactions();
   document.getElementById('txn-amount').value = '';
   document.getElementById('txn-desc').value = '';
-  showToast('✓ تم إضافة المصروف');
+  showToast(tr('tAdded'));
 }
 
 // ─── CAT SELECT ─────────────────────────
 function selectCat(el) {
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
-  selectedCat = el.dataset.cat;
+  selectedCat = el.getAttribute('data-cat-'+lang);
 }
 
 // ─── TOAST ──────────────────────────────
@@ -1439,7 +1629,7 @@ function doReset() {
   save();
   renderTransactions();
   closeResetModal();
-  showToast('✓ تم تصفير الشهر');
+  showToast(tr('tReset'));
 }
 
 // ─── CHARTS ─────────────────────────────
@@ -1452,7 +1642,7 @@ function drawSpendChart() {
   canvas.width = W;
   canvas.height = H;
 
-  const days = ['الأح','الإث','الثل','الأر','الخم','الجم','السب'];
+  const days = lang==='ar' ? ['الأح','الإث','الثل','الأر','الخم','الجم','السب'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const current = [180, 320, 820, 250, 450, 300, 400];
   const prev =    [200, 280, 450, 310, 380, 420, 350];
   const max = Math.max(...current, ...prev) * 1.2;
@@ -1521,7 +1711,7 @@ function drawSpendChart() {
 
   // day labels
   ctx.fillStyle = '#5C5A72';
-  ctx.font = '10px IBM Plex Sans Arabic';
+  ctx.font = lang==='ar' ? '10px IBM Plex Sans Arabic' : '10px system-ui';
   ctx.textAlign = 'center';
   days.forEach((d,i) => {
     ctx.fillText(d, padL + i*step, H - 4);
@@ -1537,7 +1727,7 @@ function drawMonthChart() {
   canvas.width = W;
   canvas.height = H;
 
-  const months = ['يناير','فبراير','مارس','أبريل','مايو'];
+  const months = lang==='ar' ? ['يناير','فبراير','مارس','أبريل','مايو'] : ['Jan','Feb','Mar','Apr','May'];
   const data = [3200, 3800, 4100, 4210, 4720];
   const max = Math.max(...data) * 1.2;
   const padT = 10, padB = 28;
@@ -1573,13 +1763,14 @@ function drawMonthChart() {
     ctx.fill();
 
     ctx.fillStyle = i === data.length-1 ? '#9896B0' : '#5C5A72';
-    ctx.font = '9px Space Mono';
+    ctx.font = lang==='ar' ? '9px IBM Plex Sans Arabic' : '9px system-ui';
     ctx.textAlign = 'center';
     ctx.fillText(months[i].slice(0,3), x + barW/2, H - 8);
   });
 }
 
 // ─── INIT ────────────────────────────────
+applyLang();
 renderTransactions();
 setTimeout(drawSpendChart, 100);
 
